@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import User from "../Models/User.model.js";
+import responder from "../Utils/responder.js";
 /*
  1 . email , password and name take from user
  2 . check email ,pass & name from req.body 
@@ -13,19 +14,13 @@ import User from "../Models/User.model.js";
 const SignUp = async (req, res) => {
     let { name, email, password } = req.body;
     if (!name || !email || !password) {
-        return res.json({
-            data: null,
-            msg: "Must be required email,password and name"
-        })
+         return responder(res, 400, "Must provide name, email, and password");
     }
 
     let ISUserExits = await User.findOne({ email: email })
 
     if (ISUserExits) {
-        return res.json({
-            data: null,
-            msg: "email already exits"
-        })
+        return responder(res, 409, "Email already exists");
     }
 
     let hashPass = await bcrypt.hash(password, 10)
@@ -40,16 +35,13 @@ const SignUp = async (req, res) => {
     let saveUser = await CreateNewUser.save();
 
     if (saveUser) {
-        return res.json({
-            data: [],
-            msg: "User Create SuccessFully"
-        })
+         return responder(res, 201, "User Created Successfully", {
+        name: newUser.name,
+        email: newUser.email
+    });
     }
 
-    return res.json({
-        msg: "Data  received",
-        data: { name, email, password }
-    })
+ 
 }
 
 export { SignUp };
