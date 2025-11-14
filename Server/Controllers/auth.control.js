@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import User from "../Models/User.model.js";
 import responder from "../Utils/responder.js";
+import jwt from "jsonwebtoken";
+
 /*
  SIGNUP API
  1 . email , password and name take from user
@@ -23,7 +25,7 @@ import responder from "../Utils/responder.js";
 const SignUp = async (req, res) => {
     let { name, email, password } = req.body;
     if (!name || !email || !password) {
-         return responder(res, 400, "Must provide name, email, and password");
+        return responder(res, 400, "Must provide name, email, and password");
     }
 
     let ISUserExits = await User.findOne({ email: email })
@@ -44,33 +46,50 @@ const SignUp = async (req, res) => {
     let saveUser = await CreateNewUser.save();
 
     if (saveUser) {
-         return responder(res, 201, "User Created Successfully", {
-        name: newUser.name,
-        email: newUser.email
-    });
+        return responder(res, 201, "User Created Successfully", {
+            name: newUser.name,
+            email: newUser.email
+        });
     }
 
-    const LoginApi = async(req,res)=>{
-    try {
-          let {username , email , password} = req.body;
-       
-      if(!username || !email || !password){
-       return responder(res,400,"Email, Password ,Username Must be required",[]);
-      }
+    const LoginApi = async (req, res) => {
+        try {
+            let { email, password } = req.body;
 
-      let ISExitsUSER = User.findOne({email});
-      
-      if(ISExitsUSER){
-        return responder(res,400,"User Already Exits",[]);
-      }
+            if ( !email || !password) {
+                return responder(res, 406, "Email, Password Must be required", []);
+            }
 
-      
-    } catch (error) {
-        return responder(res, 400, error,null);
-    }     
+            let FindUSER = await User.findOne({ email });
+
+            if (!FindUSER) {
+                return responder(res, 401, "User not Exits", null);
+            }
+
+            isPassMatch = await bcrypt.compare(password,FindUSER.password);
+
+            if(!isPassMatch){
+                return responder(res,404,"INValid Credential",null);
+            }
+
+  let token = jwt.sign({
+            id: FindUSER._id,
+            name: FindUSER.name,
+            email: FindUSER.email
+        }, process.env.JWT_SECRET);
+
+        req.session.token = token;  // store token in Our session...
+
+        return responder(res, 200, "login successfully", null);
+
+
+
+        } catch (error) {
+            return responder(res, 400, error, null);
+        }
 
     }
- 
+
 }
 
-export { SignUp , LoginApi };
+export { SignUp, LoginApi };
