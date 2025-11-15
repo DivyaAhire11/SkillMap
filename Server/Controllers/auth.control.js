@@ -92,7 +92,7 @@ const LoginApi = async (req, res) => {
         return responder(res, 200, "login successfully", null);
 
     } catch (error) {
-        return responder(res, 401, error, null);
+        return responder(res, 401, error.message, null);
     }
 
 }

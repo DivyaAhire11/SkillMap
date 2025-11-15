@@ -29,9 +29,17 @@ import connectDB from "./Config/ConnectDB.js";
 
 //------Controllers----------
 import { SignUp, LoginApi } from "./Controllers/auth.control.js";
+import responder from "./Utils/responder.js";
+import verifyToken from "./Middleware/verifyJWT.js"
+
 
 app.post("/api/signup", SignUp);
 app.post("/api/login", LoginApi);
+
+app.get("/dashboard",verifyToken,(req,res)=>{
+    console.log(req.user.id)
+    return responder(res,200,"dashboard",null);
+})
 
 app.get("./health", (req, res) => {
     return req.status(200).json({ data: Date.now(), message: "Server Running Healthy" })
