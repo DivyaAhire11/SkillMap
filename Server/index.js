@@ -31,14 +31,17 @@ import connectDB from "./Config/ConnectDB.js";
 import { SignUp, LoginApi } from "./Controllers/auth.control.js";
 import responder from "./Utils/responder.js";
 import verifyToken from "./Middleware/verifyJWT.js"
+import { ganarateRoadmap } from "./Controllers/roadmapControl.js"
 
 
 app.post("/api/signup", SignUp);
 app.post("/api/login", LoginApi);
+app.post("/api/roadmap", ganarateRoadmap);
 
-app.get("/dashboard",verifyToken,(req,res)=>{
+
+app.get("/dashboard", verifyToken, (req, res) => {
     console.log(req.user.id)
-    return responder(res,200,"dashboard",null);
+    return responder(res, 200, "dashboard", null);
 })
 
 app.get("./health", (req, res) => {

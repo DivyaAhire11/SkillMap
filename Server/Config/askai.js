@@ -16,8 +16,7 @@ const askai = async (question = "you are rodmap ai and your name is learnmap.ai"
         })
 
         const response = await openai.chat.completions.create({
-            model: "mistralai/ministral-3d",//Specifies which model to use.
-            // we're using: mistralai/ministral-3d through OpenRouter.
+            model: "mistralai/ministral-3d",//Specifies which model to use through OpenRouter.
             messages: [
                 {
                     "role": "user",   // tells the model who is speaking
