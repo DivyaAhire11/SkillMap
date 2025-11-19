@@ -26,13 +26,13 @@ const SignUp = async (req, res) => {
     try {
         let { name, email, password } = req.body;
         if (!name || !email || !password) {
-            return responder(res, 400, "Must provide name, email, and password");
+            return responder(res, 400, "Must provide name, email, and password", null);
         }
 
         let ISUserExits = await User.findOne({ email: email })
 
         if (ISUserExits) {
-            return responder(res, 409, "Email already exists");
+            return responder(res, 409, "Email already exists", null);
         }
 
         let hashPass = await bcrypt.hash(password, 10)

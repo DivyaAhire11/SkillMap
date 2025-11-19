@@ -10,11 +10,11 @@ const verifyToken = (req, res, next) => {
         } else {
             let decodedData = jwt.verify(token, process.env.JWT_SECRET)
             req.user = decodedData;
-            next();        
-        
-        }   
+            next();
+
+        }
     } catch (error) {
-         return responder(res,error.status || 500 , error.message,null);
+        return responder(res, error.status || 500, error.message, null);
     }
 }
 
