@@ -10,6 +10,9 @@ const app = express();
 const PORT = 3000 || process.env.PORT;
 
 //-------MiddleWare--------
+import verifyToken from "./Middleware/verifyJWT.js"
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 app.use(session({
@@ -27,16 +30,17 @@ app.use(session({
 import connectDB from "./Config/ConnectDB.js";
 
 
+//----------Utils-------------
+import responder from "./Utils/responder.js";
+
 //------Controllers----------
 import { SignUp, LoginApi } from "./Controllers/auth.control.js";
-import responder from "./Utils/responder.js";
-import verifyToken from "./Middleware/verifyJWT.js"
 import { ganarateRoadmap } from "./Controllers/roadmapControl.js"
 
 
 app.post("/api/signup", SignUp);
 app.post("/api/login", LoginApi);
-app.post("/api/roadmap", ganarateRoadmap);
+app.post("/api/roadmap",verifyToken, ganarateRoadmap);
 
 
 app.get("/dashboard", verifyToken, (req, res) => {

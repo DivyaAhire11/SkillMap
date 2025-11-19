@@ -1,6 +1,7 @@
 import askai from "../Config/askai.js";
 import responder from "../Utils/responder.js";
 import generatePrompt from "../Utils/genaratePrompt.js";
+import Roadmap from "../Models/roadmap.model.js";
 
 const ganarateRoadmap = async (req, res) => {
    try {
@@ -13,9 +14,22 @@ const ganarateRoadmap = async (req, res) => {
       let question = generatePrompt(topic);
 
       let answer = await askai(question);
-      let parsedAnswer;
-      parsedAnswer = JSON.parse(answer)
-      return responder(res, 200,parsedAnswer, "here is your roadmap");
+
+      // let parsedAnswer;
+
+      // parsedAnswer = JSON.parse(answer)
+
+      // return responder(res, 200, parsedAnswer, "here is your roadmap");
+
+      const createRoadmap = await Roadmap.create({
+         name: topic,
+         roadmap: answer,
+         createBy: req.user.id
+      })
+
+      const saveRoadmap = await createRoadmap.save();
+
+      return responder(res, 200, saveRoadmap.name, "Roadmap created successfully")
 
    } catch (error) {
       return responder(res, error.status || 500, null, error.message || "Failed to generate roadmap");
