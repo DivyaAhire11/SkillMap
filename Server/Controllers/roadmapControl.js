@@ -7,16 +7,18 @@ const ganarateRoadmap = async (req, res) => {
 
       let { topic } = req.body;
       if (!topic) {
-         return responder(res, 406, "topic is required to generate roadmap", null);
+         return responder(res, 406, null, "Topic is required to generate a roadmap");
       }
 
       let question = generatePrompt(topic);
 
       let answer = await askai(question);
-      return responder(res, 200, "here is your roadmap", answer);
+      let parsedAnswer;
+      parsedAnswer = JSON.parse(answer)
+      return responder(res, 200,parsedAnswer, "here is your roadmap");
 
    } catch (error) {
-      return responder(res, error.status || 500, null, error.message);
+      return responder(res, error.status || 500, null, error.message || "Failed to generate roadmap");
    }
 }
 
